@@ -61,8 +61,9 @@ jobs:
 
       - name: Get GKE credentials
         run: |
-#          gcloud container clusters get-credentials eb-cluster --zone us-central1-a --project eappanb4
           gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --region ${{ env.REGION }} --project ${{ env.PROJECT_ID }}
+#          gcloud container clusters get-credentials eb-cluster --zone us-central1-a --project eappanb4
+
 
 #      - name: Get GKE credentials
 #        uses: google-github-actions/get-gke-credentials@v2
