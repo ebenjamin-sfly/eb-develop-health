@@ -3,13 +3,21 @@ name: Build and Push to GCP Artifact Registry
 on:
   push:
     branches: [ master ]
-
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: 'read'
       id-token: 'write'
+
+    env:
+#      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      PROJECT_ID: eappanb4
+      REGION: us-central1
+      CLUSTER_NAME: eb-cluster
+      REPO_NAME: eb-artifact-registry
+      IMAGE_NAME: develop-health
+      NAMESPACE: develop-health
 
     steps:
       - name: Checkout code
@@ -31,15 +39,38 @@ jobs:
         uses: docker/setup-qemu-action@v3
 
       - name: Set up Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v6
 
-      - name: Build and push multi-arch image
-        run: |
-          IMAGE="us-central1-docker.pkg.dev/eappanb4/eb-artifact-registry/develop-health"
-          docker buildx build --platform linux/amd64,linux/arm64 -t "${IMAGE}:latest" --push .
-
+#      - name: Build and push multi-arch image
+#        run: |
+#          IMAGE="us-central1-docker.pkg.dev/eappanb4/eb-artifact-registry/develop-health"
+#          docker buildx build --platform linux/amd64,linux/arm64 -t "${IMAGE}:latest" --push .
       - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+#      - name: Build and push Docker image
+#        run: |
+#          IMAGE="us-central1-docker.pkg.dev/eappanb4/eb-artifact-registry/develop-health"
+#          docker build -t "${IMAGE}:latest" .
+#          docker push "${IMAGE}:latest"
+
+      - name: Get GKE credentials
         run: |
-          IMAGE="us-central1-docker.pkg.dev/eappanb4/eb-artifact-registry/develop-health"
-          docker build -t "${IMAGE}:latest" .
-          docker push "${IMAGE}:latest"
+          gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --region ${{ env.REGION }} --project ${{ env.PROJECT_ID }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install ${{ env.IMAGE_NAME }} ./helm/${{ env.IMAGE_NAME }} \
+            --namespace ${{ env.NAMESPACE }} \
+            --create-namespace \
+            --set image.repository=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ github.sha }} \
+            --wait
