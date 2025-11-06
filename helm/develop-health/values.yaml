@@ -1,0 +1,13 @@
+developHealth:
+  developHealth:
+    image:
+      repository: us-central1-docker.pkg.dev/eappanb4/eb-artifact-registry/develop-health
+      tag: latest
+  ports:
+  - name: svc-port
+    port: 80
+    protocol: TCP
+    targetPort: 8000
+  replicas: 2
+  type: LoadBalancer
+kubernetesClusterDomain: cluster.local

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "develop-health.fullname" . }}
+  labels:
+    app: develop-health
+  {{- include "develop-health.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.developHealth.type }}
+  selector:
+    app: develop-health
+  {{- include "develop-health.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.developHealth.ports | toYaml | nindent 2 -}}

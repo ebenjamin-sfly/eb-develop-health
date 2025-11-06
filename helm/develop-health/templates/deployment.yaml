@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "develop-health.fullname" . }}
+  labels:
+    app: develop-health
+  {{- include "develop-health.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.developHealth.replicas }}
+  selector:
+    matchLabels:
+      app: develop-health
+    {{- include "develop-health.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: develop-health
+      {{- include "develop-health.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ quote .Values.kubernetesClusterDomain }}
+        image: {{ .Values.developHealth.developHealth.image.repository }}:{{ .Values.developHealth.developHealth.image.tag
+          | default .Chart.AppVersion }}
+        name: develop-health
+        ports:
+        - containerPort: 8000
+          name: app-port
+        resources: {}
