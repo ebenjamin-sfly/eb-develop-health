@@ -59,11 +59,28 @@ jobs:
 #          docker build -t "${IMAGE}:latest" .
 #          docker push "${IMAGE}:latest"
 
-      - name: Install gke-gcloud-auth-plugin
+#      - name: Install gke-gcloud-auth-plugin
+#        run: |
+#          sudo apt-get update -y
+#          sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
+#          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+      - name: Install GKE gcloud auth plugin
         run: |
+          # Add Google Cloud SDK distribution URI as a package source
+          echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | \
+            sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+      
+          # Import the Google Cloud public key
+          curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+            sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+      
+          # Update package list and install plugin
           sudo apt-get update -y
           sudo apt-get install -y google-cloud-sdk-gke-gcloud-auth-plugin
-          export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+        env:
+          USE_GKE_GCLOUD_AUTH_PLUGIN: True
+
 
       - name: Get GKE credentials
         run: |
