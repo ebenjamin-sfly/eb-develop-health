@@ -18,6 +18,8 @@ jobs:
       REPO_NAME: eb-artifact-registry
       IMAGE_NAME: develop-health
       NAMESPACE: develop-health
+      WKI_PROVIDER: projects/692677596023/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+      GHA_SA: github-sa@eappanb4.iam.gserviceaccount.com
 
     steps:
       - name: Checkout code
@@ -28,8 +30,10 @@ jobs:
         uses: google-github-actions/auth@v2
         with:
           token_format: access_token
-          workload_identity_provider: projects/692677596023/locations/global/workloadIdentityPools/github-pool/providers/github-provider
-          service_account: github-sa@eappanb4.iam.gserviceaccount.com
+          workload_identity_provider: ${{ env.WKI_PROVIDER}}
+#          workload_identity_provider: projects/692677596023/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: ${{ env.GHA_SA }}
+#          service_account: github-sa@eappanb4.iam.gserviceaccount.com
 
       - name: Configure Docker for Artifact Registry
         run: |
@@ -86,14 +90,6 @@ jobs:
         run: |
           gcloud container clusters get-credentials ${{ env.CLUSTER_NAME }} --region ${{ env.REGION }}-a --project ${{ env.PROJECT_ID }}
 #          gcloud container clusters get-credentials eb-cluster --zone us-central1-a --project eappanb4
-
-
-#      - name: Get GKE credentials
-#        uses: google-github-actions/get-gke-credentials@v2
-#        with:
-#            cluster_name: ${{ env.CLUSTER_NAME }}
-#            location: ${{ env.REGION }}  # e.g., us-central1-a or us-central1
-#            project_id: ${{ env.PROJECT_ID }}
 
       - name: Install Helm
         uses: azure/setup-helm@v4.3.0
