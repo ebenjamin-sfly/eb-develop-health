@@ -18,7 +18,8 @@ jobs:
       REPO_NAME: eb-artifact-registry
       IMAGE_NAME: develop-health
       NAMESPACE: develop-health
-      WKI_PROVIDER: projects/692677596023/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+      WKI_PROVIDER: ${{ secrets.WKI_PROVIDER}}
+#      WKI_PROVIDER: projects/692677596023/locations/global/workloadIdentityPools/github-pool/providers/github-provider
       GHA_SA: github-sa@eappanb4.iam.gserviceaccount.com
 
     steps:
