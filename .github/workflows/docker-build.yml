@@ -11,8 +11,8 @@ jobs:
       id-token: 'write'
 
     env:
-#      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      PROJECT_ID: eappanb4
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+#      PROJECT_ID: eappanb4
       REGION: us-central1
       CLUSTER_NAME: eb-cluster
       REPO_NAME: eb-artifact-registry
