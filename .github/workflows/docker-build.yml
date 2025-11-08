@@ -10,14 +10,13 @@ jobs:
       contents: 'read'
       id-token: 'write'
 
-"""
-The following variables are created by WKI TF and automatically set in 
-GitHub repo https://github.com/ebenjamin-sfly/eb-develop-health/settings/secrets/actions 
-GCP_ARTIFACT_REGISTRY
-GCP_PROJECT_ID
-GCP_SERVICE_ACCOUNT
-GCP_WIF_PROVIDER
-"""
+# The following variables are created by WKI TF and automatically set in \
+#  GitHub repo https://github.com/ebenjamin-sfly/eb-develop-health/settings/secrets/actions
+# GCP_ARTIFACT_REGISTRY
+# GCP_PROJECT_ID
+# GCP_SERVICE_ACCOUNT
+# GCP_WIF_PROVIDER
+
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 #      PROJECT_ID: eappanb4
